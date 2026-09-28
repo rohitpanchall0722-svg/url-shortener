@@ -3,6 +3,7 @@ from app.database.connection import get_db
 from app.scheams.url import RequestUrl,ResponseUrl
 from app.services.url_short import UrlService
 from sqlalchemy.orm import Session
+from fastapi.responses import RedirectResponse
 
 router = APIRouter(prefix="/short_url",
                    tags=["Short_url"])
@@ -19,4 +20,8 @@ def create(request:RequestUrl,db:Session=Depends(get_db)):
         new_url=short.short_url
     )
 
+@router.get("/url/{short_url}")
+def rediect_url(url:str,db:Session=Depends(get_db)):
+    result = url_service.get_url(db,url)
+    return RedirectResponse(url=result.original_url)
     

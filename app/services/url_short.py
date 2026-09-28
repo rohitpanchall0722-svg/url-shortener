@@ -16,3 +16,12 @@ class UrlService():
     def get_url(self,db:Session,url:str):
         code = url_repo.get_url(db,url)
         return code
+
+    def get_short_url(self,db:Session,url:str):
+        search = url_repo.get_url(db,url)
+        if search is None :
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail="not found ")
+        url_repo.click_count_url(db,search)
+        return search
+
