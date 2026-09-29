@@ -1,16 +1,22 @@
 from app.database.database import Base
 from app.models.url import Url_Short
-from sqlalchemy import select
+from sqlalchemy import select,update
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 
 
 class UrlRepository():
     def create(self,db:Session,url:str,new_url:str):
         url_shoter = Url_Short(
-            original_url=url,short_url=new_url
+            original_url=str(url),
+            short_url=new_url,
         )
         db.add(url_shoter)
-        db.commit()
+        try:
+            db.commit()
+        except IntegrityError:
+            db.rollback()
+            raise
         db.refresh(url_shoter)
         return url_shoter
 
@@ -20,7 +26,11 @@ class UrlRepository():
 
 
     def click_count_url(self,db:Session,click_link:Url_Short):
-        click_link.click_count+=1
+        stmt = update(Url_Short).where(Url_Short.id==click_link.id).values(
+            click_count=Url_Short.click_count + 1
+        )
+        db.execute(stmt)
         db.commit()
-        return click_link
-    
+
+        db.refresh(click_link)
+        return click_link 

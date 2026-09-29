@@ -25,3 +25,12 @@ class UrlService():
         url_repo.click_count_url(db,search)
         return search
 
+    def coustom_url(self,db:Session,original_url:str,coustom_url:str):
+        existing = url_repo.get_url(db,coustom_url)
+        if existing is not None:
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT,
+                                detail="try with diffresnt coustm name")
+        save = url_repo.create(db,original_url,coustom_url)
+        return save
+        
+
