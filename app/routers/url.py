@@ -22,6 +22,24 @@ def create(request:RequestUrl,http_request:Request,db:Session=Depends(get_db)):
         new_url=new_url
     )
 
+@router.get("/all",name="get_all_url")
+def get_all_url(db:Session=Depends(get_db)):
+    return url_service.get_all_url(db)
+
+@router.delete("/delete/{url_id}",name="delete_url")
+def delete_url(url_id:int,db:Session=Depends(get_db)):
+    deleted_url = url_service.delete_url(db,url_id)
+    return {
+        "message": "URL deleted successfully",
+        "deleted_url": {
+            "id": deleted_url.id,
+            "original_url": deleted_url.original_url,
+            "short_url": deleted_url.short_url,
+            "click_count": deleted_url.click_count,
+            "created_at": deleted_url.created_at,
+        },
+    }
+
 @router.get("/{short_url}")
 def redirect_url(short_url:str,db:Session=Depends(get_db)):
     result = url_service.get_short_url(db,short_url)

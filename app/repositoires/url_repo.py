@@ -34,3 +34,16 @@ class UrlRepository():
 
         db.refresh(click_link)
         return click_link 
+    
+
+    def get_all_url(self,db:Session):
+        stmt = select(Url_Short)
+        return db.execute(stmt).scalars().all()
+
+    def delete_url(self,db:Session,url_id:int):
+        url = db.get(Url_Short,url_id)
+        if url is None:
+            return None
+        db.delete(url)
+        db.commit()
+        return url

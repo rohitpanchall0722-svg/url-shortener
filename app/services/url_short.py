@@ -17,6 +17,16 @@ class UrlService():
         code = url_repo.get_url(db,url)
         return code
 
+    def get_all_url(self,db:Session):
+        return url_repo.get_all_url(db)
+
+    def delete_url(self,db:Session,url_id:int):
+        url = url_repo.delete_url(db,url_id)
+        if url is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail="not found ")
+        return url
+
     def get_short_url(self,db:Session,url:str):
         search = url_repo.get_url(db,url)
         if search is None :
